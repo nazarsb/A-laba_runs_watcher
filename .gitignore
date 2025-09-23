@@ -1,0 +1,60 @@
+# Poetry-специфичные файлы
+/poetry.lock
+/.venv/
+
+# Виртуальные окружения
+venv/
+venvruns/
+.env
+env/
+ENV/
+
+# Файлы Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# IDE и редакторы
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# Логи и БД
+*.log
+*.db
+
+# Конфиденциальные данные
+.env
+.env.local
+.env.dev
+.env.prod
+secrets.json
+config.json
+credentials.py
+
+docker-compose.yml

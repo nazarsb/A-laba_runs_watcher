@@ -1,0 +1,32 @@
+[project]
+name = "A-laba"
+version = "0.1.0"
+packages = [{include = "bot"}]
+description = ""
+authors = [
+    {name = "Nazar",email = "nazarsbn@yandex.ru"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiogram (>=3.21.0,<4.0.0)",
+    "aiogram-dialog (>=2.4.0,<3.0.0)",
+    "sqlalchemy (>=2.0.43,<3.0.0)",
+    "logging (>=0.4.9.6,<0.5.0.0)",
+    "dynaconf (>=3.2.11,<4.0.0)",
+    "fluentogram (>=1.2.1,<2.0.0)",
+    "redis (>=6.4.0,<7.0.0)",
+    "pydentic (>=0.0.1.dev3,<0.0.2)",
+    "psycopg[binary] (>=3.2.9,<4.0.0)",
+    "environs (>=14.3.0,<15.0.0)",
+    "alembic (>=1.16.5,<2.0.0)",
+    "python-dateutil (>=2.9.0.post0,<3.0.0)",
+]
+
+[tool.poetry]
+packages = [{include = "bot"}]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

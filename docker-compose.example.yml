@@ -1,0 +1,62 @@
+services:
+  postgres:
+    container_name: postgres
+    env_file: .env
+    image: postgres:15-alpine
+    restart: ${DOCKER_RESTART_POLICY}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports: 
+      - "127.0.0.1:${POSTGRES_PORT}:5432"
+    volumes:
+      - "postgres_volume:/var/lib/postgresql/data"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - alaba-network
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    restart: ${DOCKER_RESTART_POLICY}
+    env_file:
+      - .env
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "${PGADMIN_PORT}:80"
+    volumes:
+      - "pgadmin_volume:/var/lib/pgadmin"
+    depends_on:
+      postgres_alaba:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+        compress: "true"
+    networks:
+      - custom-network
+
+volumes:
+  postgres_volume:
+  pgadmin_volume:
+
+networks:
+  alaba-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.32.1.0/24  # Явно указываем новую подсеть

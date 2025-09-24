@@ -10,13 +10,15 @@ from aiogram.fsm.storage.base import DefaultKeyBuilder
 from aiogram_dialog import setup_dialogs
 
 from redis.asyncio.client import Redis
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from bot.config.config import Config, load_config
 from bot.handlers import get_routers
 from bot.dialogs import get_dialogs
-from bot.middlewares import albg_shield, logging_middleware
+from bot.middlewares import albg_shield, logging_middleware, session
 from bot.dialogs.new_run_dialog.dialogs import new_run_dialog
 from bot.dialogs.start_dialog.dialogs import start_dialog
+from bot.keyboards.menu_buttons import get_main_menu_commands
 
 logger = logging.getLogger(__name__)
 
@@ -36,9 +38,9 @@ async def main() -> None:
               default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher(storage=storage)
 
-    # engine = create_async_engine(
-    #     url=str(config.db.dsn) + "?options=-c%20timezone=Europe/Moscow", echo=config.db.is_echo)
-    # Sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
+    engine = create_async_engine(
+        url=str('postgresql+psycopg://'+config.db.pg_user+':'+config.db.pg_password+'@'+config.db.pg_host+':'+str(config.db.pg_port)+'/'+config.db.pg_db_name) + "?options=-c%20timezone=Europe/Moscow")
+    Sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
 
     logger.info("Including routers and dialogs")
     dp.include_routers(*get_routers(), *get_dialogs())
@@ -53,7 +55,9 @@ async def main() -> None:
     dp.update.middleware(logging_middleware.LoggingMiddleware())
     dp.update.outer_middleware(albg_shield.AlbgShieldMiddleware())
 
-    # dp.update.outer_middleware(session.DbSessionMiddleware(Sessionmaker))
+    await bot.set_my_commands(get_main_menu_commands())
+
+    dp.update.outer_middleware(session.DbSessionMiddleware(Sessionmaker))
 
     # try:
         # await asyncio.gather(
@@ -75,7 +79,7 @@ async def main() -> None:
         await dp.start_polling(bot)
     except Exception as e:
         logger.exception(e)
-    # finally:
-    #     await bot.session.close()
-    #     logger.info("Connection to Postgres closed")
+    finally:
+        await bot.session.close()
+        logger.info("Connection to Postgres closed")
 

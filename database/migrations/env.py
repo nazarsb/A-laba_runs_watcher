@@ -29,7 +29,7 @@ target_metadata = Base.metadata
 
 db_config: Config = load_config()
 config.set_main_option("sqlalchemy.url",
-str('postgresql+psycopg://'+db_config.db.pg_user+':'+db_config.db.pg_password+'@'+db_config.db.pg_host+':'+str(db_config.db.pg_port)+'/'+db_config.db))
+str('postgresql+psycopg://'+db_config.db.pg_user+':'+db_config.db.pg_password+'@'+db_config.db.pg_host+':'+str(db_config.db.pg_port)+'/'+db_config.db.pg_db_name))
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

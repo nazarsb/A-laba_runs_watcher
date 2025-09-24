@@ -1,35 +1,19 @@
 
 from aiogram.types import User
 from aiogram_dialog import DialogManager
- 
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from bot.db_requests.db_requests import get_instrument_names, get_reagents
 
 
-async def getter_instruments(**kwargs):
-    instruments = [
-        ('NovaSeq 6000', 'NovaSeq 6000'),
-        ('Salus Pro', 'Salus Pro'),
-        ('Salus Evo', 'Salus Evo'),
-    ]
+async def getter_instruments(session: AsyncSession, **kwargs):
+    instruments = await get_instrument_names(session)
     return {'instruments': instruments}
 
 
-async def getter_reagents(dialog_manager: DialogManager, **kwargs):
-    if dialog_manager.dialog_data.get('instrument') == 'NovaSeq 6000':
-        reagents = [
-            ('S1 300', 'S1 300'),
-            ('S4 300', 'S4 300'),
-           
-        ]
-    elif dialog_manager.dialog_data.get('instrument') == 'Salus Pro':
-        reagents = [
-            ('80M PE100', '80M PE300'),
-            ('300M PE100', '300M PE100'),
-        ]
-    elif dialog_manager.dialog_data.get('instrument') == 'Salus Evo':
-        reagents = [
-            ('1500M PE100', '1500M PE100'),
-            ('3000M PE100', '3000M PE100'),
-        ]
+async def getter_reagents(dialog_manager: DialogManager, session: AsyncSession, **kwargs):
+    instrument = dialog_manager.dialog_data.get('instrument')
+    reagents = await get_reagents(instrument, session)
     return {'reagents': reagents}
 
 

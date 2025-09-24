@@ -12,13 +12,14 @@ from bot.dialogs.new_run_dialog.handlers import (click_new_run, instrument_selec
 new_run_dialog = Dialog(
     Window(
         Const('На каком приборе запускаемся?'),
+        Column(
         Select(
             Format('{item[0]}'),
             id='instr',
             item_id_getter=lambda x: x[1],
             items='instruments',
             on_click=instrument_selection,
-        ),
+        )),
         Button(Const('Назад'), id='back0', on_click=command_start_process),
         getter=getter_instruments,
         state=RunSG.new_run

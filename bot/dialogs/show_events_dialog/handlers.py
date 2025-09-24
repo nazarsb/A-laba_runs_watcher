@@ -31,5 +31,4 @@ async def click_new_event(callback: CallbackQuery, button: Button, dialog_manage
     await dialog_manager.start(state=ElectroSG.event_start_date, data={'event_type': 'Отключение энергии'})
 
 async def click_alother_event(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
-    # await dialog_manager.start(state=AnotherEventSG.another_event)
-    await callback.answer(text='Этот раздел еще в разработке. Обождите.', show_alert=True)
+    await dialog_manager.start(state=AnotherEventSG.another_event)

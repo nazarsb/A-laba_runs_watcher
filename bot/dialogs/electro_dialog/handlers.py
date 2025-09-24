@@ -13,11 +13,14 @@ from aiogram_dialog.widgets.input import ManagedTextInput, TextInput
 
 from bot.dialogs.electro_dialog.states import ElectroSG
 from bot.dialogs.start_dialog.states import StartSG
+from bot.db_requests.db_requests import insert_event
+
 
 logger = logging.getLogger(__name__)
 
 
 async def command_start_process(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
+    dialog_manager.dialog_data.update({'is_there_time': True})
     await dialog_manager.start(state=StartSG.start)
 
 async def click_on_start_date(callback: ChatEvent, widget: Calendar, dialog_manager: DialogManager, selected_date: date,):
@@ -73,5 +76,14 @@ async def go_summary(callback: CallbackQuery, button: Button, dialog_manager: Di
 
 
 async def complete_new_event_plan(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
+    await insert_event(event_type_name=dialog_manager.start_data.get('event_type'),
+                       instrument_name=dialog_manager.dialog_data.get('instrument'),
+                       reagent_name=dialog_manager.dialog_data.get('reagent'),
+                       event_start_date=dialog_manager.dialog_data.get('event_start_date'),
+                       event_end_date=dialog_manager.dialog_data.get('event_end_date'),
+                       time_start=dialog_manager.dialog_data.get('time1'),
+                       time_end=dialog_manager.dialog_data.get('time2'),
+                       is_there_time=dialog_manager.dialog_data.get('is_there_time'),
+                       session=dialog_manager.middleware_data.get('session'))
     await callback.answer('Событие запланировано. Просмотр событий - по команде /show_events', show_alert=True)
     await dialog_manager.done()

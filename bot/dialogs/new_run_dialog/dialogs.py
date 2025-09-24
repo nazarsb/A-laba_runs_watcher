@@ -50,7 +50,7 @@ new_run_dialog = Dialog(
         Const('Если все ОК, жмите "Завершить".\n'),
         Format('<b>Запланированное событие:</b> {event_type}'),
         Format('<b>Инструмент:</b> {summary[instrument]}'),
-        Format('<b>Дата запуска:</b> {summary[run_date]}'),
+        Format('<b>Дата запуска:</b> {summary[run_start_date]}'),
         Format('<b>Реагент:</b> {summary[reagent]}'),
         Button(Const('Назад'), id='back3', on_click=go_back),
         Button(Const('Завершить'), id='complete', on_click=complete_new_run_plan),

@@ -1,14 +1,13 @@
 from aiogram.types import User
 from aiogram_dialog import DialogManager
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from bot.db_requests.db_requests import get_events
+
+
+async def getter_events(dialog_manager: DialogManager, session: AsyncSession, **kwargs):
+    events = await get_events(session)
+    return {'events': events}
  
 
-async def getter_user(dialog_manager: DialogManager, event_from_user: User, **kwargs):  
-    if dialog_manager.start_data:
-        getter_user_data = {
-        'name': event_from_user.first_name,
-        'is_first': True
-        }
-        # dialog_manager.start_data.clear()
-    else:
-        getter_user_data = {'is_first': False}    
-    return getter_user_data

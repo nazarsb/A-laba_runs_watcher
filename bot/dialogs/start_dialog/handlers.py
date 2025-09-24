@@ -25,7 +25,6 @@ async def go_next(callback: CallbackQuery, button: Button, dialog_manager: Dialo
 
 async def click_new_run(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
     await dialog_manager.start(state=RunSG.new_run, data={'event_type': 'Новый запуск'})
-    print(dialog_manager.dialog_data)
 
 async def click_new_event(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
     await dialog_manager.start(state=ElectroSG.event_start_date, data={'event_type': 'Отключение энергии'})

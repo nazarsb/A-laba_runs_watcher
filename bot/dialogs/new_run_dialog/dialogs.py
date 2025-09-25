@@ -1,6 +1,6 @@
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.text import Const, Format
-from aiogram_dialog.widgets.kbd import Button, Select, Calendar, Column
+from aiogram_dialog.widgets.kbd import Button, Select, Calendar, Column, Group
 
 from bot.dialogs.new_run_dialog.getters import getter_instruments, getter_reagents, getter_summary
 from bot.dialogs.new_run_dialog.states import RunSG   
@@ -11,7 +11,7 @@ from bot.dialogs.new_run_dialog.handlers import (click_new_run, instrument_selec
 
 new_run_dialog = Dialog(
     Window(
-        Const('На каком приборе запускаемся?'),
+        Const('На каком <b>приборе</b> запускаемся?'),
         Column(
         Select(
             Format('{item[0]}'),
@@ -25,13 +25,14 @@ new_run_dialog = Dialog(
         state=RunSG.new_run
     ),
     Window(
-        Const('Дата запуска'),
+        Const('Дата <b>НАЧАЛА</b> запуска'),
         Calendar(id='date', on_click=click_on_date),
         Button(Const('Назад'), id='back1', on_click=go_back),
         state=RunSG.run_date
     ),
     Window(
-        Const('Какой реагент использовать?'),
+        Const('Какой <b>набор</b> будем использовать? \n\n<i>на основании этого бот сам посчитает длительность запуска 🤓</i>'),
+        Group(
         Column(
             Select(
                 Format('{item[0]}'),
@@ -39,15 +40,17 @@ new_run_dialog = Dialog(
                 item_id_getter=lambda x: x[1],
                 items='reagents',
                 on_click=reagent_selection,
-            ),
-            Button(Const('Назад'), id='back2', on_click=go_back),
+            )),
+            width=3
         ),
+            Button(Const('Назад'), id='back2', on_click=go_back),
+        
             getter=getter_reagents,
             state=RunSG.reagent_kit
     ),
     Window(
-        Const('Краткое описание события'),
-        Const('Если все ОК, жмите "Завершить".\n'),
+        Const('📝 Краткое описание события'),
+        Const('Если все <b>ОК</b>, жмите <b>"Завершить"</b>.\n'),
         Format('<b>Запланированное событие:</b> {event_type}'),
         Format('<b>Инструмент:</b> {summary[instrument]}'),
         Format('<b>Дата запуска:</b> {summary[run_start_date]}'),

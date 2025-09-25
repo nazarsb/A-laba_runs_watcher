@@ -13,9 +13,9 @@ start_dialog = Dialog(
         Format('Привет, {name}!\n\n'
                'Запланировать новое событие?\n'
                'Еще можешь выбирать команды в меню внизу слева.', when='is_first'),
-        Const('Какое событие запланировать?'),
-        Button(text=Const('Новый запуск'), id='new_run', on_click=click_new_run),
-        Button(text=Const('Отключение энергии'), id='new_event', on_click=click_new_event),
+        Const('📝 Какое событие запланировать?'),
+        Button(text=Const('🚀 Новый запуск'), id='new_run', on_click=click_new_run),
+        Button(text=Const('⚠️ Отключение энергии'), id='new_event', on_click=click_new_event),
         Button(Const('Другое'), id='else_event', on_click=click_alother_event),
         getter=getter_user,
         state=StartSG.start

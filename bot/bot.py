@@ -39,7 +39,9 @@ async def main() -> None:
     dp = Dispatcher(storage=storage)
 
     engine = create_async_engine(
-        url=str('postgresql+psycopg://'+config.db.pg_user+':'+config.db.pg_password+'@'+config.db.pg_host+':'+str(config.db.pg_port)+'/'+config.db.pg_db_name) + "?options=-c%20timezone=Europe/Moscow")
+        url=str('postgresql+psycopg://'+config.db.pg_user+':'+config.db.pg_password+'@' \
+                +config.db.pg_host+':'+str(config.db.pg_port)+'/'+config.db.pg_db_name) \
+                + "?options=-c%20timezone=Europe/Moscow")
     Sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
 
     logger.info("Including routers and dialogs")

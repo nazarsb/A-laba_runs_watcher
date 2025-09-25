@@ -1,23 +1,46 @@
-from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.text import Const, Format
-from aiogram_dialog.widgets.kbd import Button
+from aiogram_dialog import Dialog, DialogManager, Window
+from aiogram_dialog.widgets.text import Const, Format, List, Case, Multi
+from aiogram_dialog.widgets.kbd import Button, Back
 
 from bot.dialogs.show_events_dialog.getters import getter_events
 from bot.dialogs.show_events_dialog.states import ShowEventsSG
 
 
+def is_run_selector(data: dict, case: Case, dialog_manager: DialogManager):
+    return False if not data['item']['instrument'] else True
+
+def is_there_event_selector(data: dict, case: Case, dialog_manager: DialogManager): 
+    return 'events' in data and bool(data['events'])
 
 show_events_dialog = Dialog(
     Window(
-        Format('Привет, {name}!\n\n'
-               'Запланировать новое событие?\n'
-               'Еще можешь выбирать команды в меню внизу слева.', when='is_first'),
-        Const('Какое событие запланировать?'),
-
-        # Button(text=Const('Новый запуск'), id='new_run', on_click=click_new_run),
-        # Button(text=Const('Отключение энергии'), id='new_event', on_click=click_new_event),
-        # Button(Const('Другое'), id='else_event', on_click=click_alother_event),
+        Case(
+            texts={
+               True:  Const('<u><b>📆 Запланированые события:</b></u>\n'),
+               False: Const('<b>В А-лабе всё спокойно.\nЗапланированных событий нет. 😴</b>\n'),
+            },
+            selector=is_there_event_selector,
+        ),
+        List(
+            field=Case(
+                        texts={
+                            True: Multi(
+                                    Format('<b>🚀 {item[event_type]}:</b> \
+                                            <b>\n{item[date_start]} - {item[date_end]}</b> \
+                                            \n{item[instrument]} на {item[reagent]}'
+                                           ),
+                            ),
+                            False: Multi(
+                                    Format('<b>⚠️ {item[event_type]}:</b> \
+                                            <b>\n{item[date_start]} - {item[date_end]}</b>')
+                                    ),
+                        },
+                        selector=is_run_selector),
+            items='events',
+            sep='\n\n'
+        ),
         getter=getter_events,
-        state=ShowEventsSG.start
+        state=ShowEventsSG.start        
     ),
 )
+

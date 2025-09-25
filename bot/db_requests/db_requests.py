@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy import case, func, insert, literal, select, text
+from sqlalchemy import Date, case, cast, func, insert, literal, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import update
 from sqlalchemy.orm import selectinload, joinedload
@@ -68,6 +68,7 @@ async def get_events(session: AsyncSession) -> list:
     stmt = select(Event).options(joinedload(Event.instrument), 
                                  joinedload(Event.reagent), 
                                  joinedload(Event.event_type)) \
+    .filter(cast(Event.event_end_date, Date) >= func.current_date()) \
     .order_by(Event.event_start_date)
     result = await session.execute(stmt)
     events = result.scalars().all()

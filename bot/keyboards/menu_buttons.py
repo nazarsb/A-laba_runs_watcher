@@ -8,9 +8,9 @@ logger = logging.getLogger(__name__)
 
 def get_main_menu_commands():
     menu_commands = {
-        "/start": "Начать диалог",
-        "/show_events": "Показать события",
-        "/cancel": "Отмена",
+        "/start": "✍️ Внести событие",
+        "/show_events": "🗂 Показать события",
+        "/cancel": "⛔️ Отмена",
     }
     main_menu_commands = [
         BotCommand(command=command, description=description)

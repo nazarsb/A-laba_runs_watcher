@@ -15,23 +15,23 @@ from bot.dialogs.electro_dialog.getters import get_event_dates_time
 
 electro_dialog = Dialog(
     Window(
-        Const('В какой день <b>начало</b> отключения?'),
+        Const('⏳ В какой день <b>начало</b> отключения?'),
         Calendar(id='date1', on_click=click_on_start_date),
         Button(Const('Назад'), id='back1', on_click=command_start_process),
         state=ElectroSG.event_start_date
     ),
 
     Window(
-        Format('Начало отключения: {event_start_date}'),
-        Const('А в какой дадут электричество?'),
+        Format('⏳ <b>Начало отключения</b>: {event_start_date}'),
+        Const('⌛️ А в какой <b>ВЕРНУТ</b> электричество?'),
         Calendar(id='date2', on_click=click_on_end_date),
         Back(Const('Назад'), id='back2'),
         state=ElectroSG.event_end_date,
     ),
 
     Window(
-        Format('Отключение будет в дни: {event_start_date} - {event_end_date}'),
-        Const('Хотите указать конкретное время отключения?'),
+        Format('🗓 Отключение будет в дни: \n<b>{event_start_date} - {event_end_date}</b>'),
+        Const('<i>Хотите указать конкретное время отключения?</i>'),
         Button(Const('Да'), id='time1', on_click=click_on_time1),
         Button(Const('Нет'), id='time2', on_click=go_summary),
         Back(Const('Назад'), id='back3'),
@@ -39,7 +39,7 @@ electro_dialog = Dialog(
     ),
 
     Window(
-        Format('Отключение будет в дни: <b>{event_start_date} - {event_end_date}</b>'),
+        Format('🗓 Отключение будет в дни: <b>{event_start_date} - {event_end_date}</b>'),
         Const('Введите время <b>НАЧАЛА</b> отключения'),
         Const('<b><i>Формат - ЧЧ:ММ</i></b>'),
         TextInput(id='time1',
@@ -51,7 +51,7 @@ electro_dialog = Dialog(
     ),
 
     Window(
-        Format('Отключение будет в дни: <b>{event_start_date} - {event_end_date}</b>'),
+        Format('🗓 Отключение будет в дни: <b>{event_start_date} - {event_end_date}</b>'),
         Format('Время начала отключения: <b>{time1}</b>'),
         Const('В какое время <b>ОКОНЧАНИЯ</b> отключения?'),
         Const('<b><i>Формат - ЧЧ:ММ</i></b>'),
@@ -64,6 +64,8 @@ electro_dialog = Dialog(
     ),
 
     Window(
+        Const('📝 Краткое описание события'),
+        Const('Если все <b>ОК</b>, жмите <b>"Да"</b>.\n'),
         Format('<b>Тип события:</b> {event_type}\n'),
         Case(
             texts={

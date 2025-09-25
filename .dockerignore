@@ -1,0 +1,8 @@
+venvruns/
+Dockerfile
+docker-compose.yml
+docker-compose.example.yml
+.env.example
+.env
+__pycache__
+.gitignore

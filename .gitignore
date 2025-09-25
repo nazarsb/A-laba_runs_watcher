@@ -58,3 +58,4 @@ config.json
 credentials.py
 
 docker-compose.yml
+redis/data/

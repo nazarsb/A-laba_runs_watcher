@@ -1,10 +1,11 @@
+from contextlib import suppress
 from datetime import date
 
 import logging
 
 from dateutil.parser import parse
 
-from aiogram import Router
+from aiogram import Bot, Router
 from aiogram.filters import CommandStart
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import DialogManager, StartMode, ChatEvent
@@ -86,4 +87,12 @@ async def complete_new_event_plan(callback: CallbackQuery, button: Button, dialo
                        is_there_time=dialog_manager.dialog_data.get('is_there_time'),
                        session=dialog_manager.middleware_data.get('session'))
     await callback.answer('Событие запланировано. Просмотр событий - по команде /show_events', show_alert=True)
+    bot = dialog_manager.middleware_data.get('bot')
+    for id in dialog_manager.middleware_data.get('albg_users'):
+        with suppress(BaseException):
+            await bot.send_message(
+                chat_id=id,
+                text=f'⚠️ Запланировано отключение электичества на <b>{dialog_manager.dialog_data.get("run_start_date")} - {dialog_manager.dialog_data.get("run_end_date")}</b>. \
+                \nПросмотр событий - по команде \n<b>/show_events</b>'
+            )
     await dialog_manager.done()

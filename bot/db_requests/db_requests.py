@@ -4,8 +4,10 @@ from sqlalchemy import Date, case, cast, func, insert, literal, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import update
 from sqlalchemy.orm import selectinload, joinedload
+from sqlalchemy.dialects.postgresql import insert as upsert
 
-from database.models import Event, Instrument, Reagent, EventType
+from database.models import Event, Instrument, Reagent, EventType, User
+from database.enums.enums import UserRole
 
 
 logger = logging.getLogger(__name__)
@@ -83,3 +85,53 @@ async def get_events(session: AsyncSession) -> list:
         'time_start': event.time_start if event.is_there_time else None,
         'time_end': event.time_end if event.is_there_time else None
     } for event in events]
+
+
+
+async def upsert_user(
+    session: AsyncSession,
+    telegram_id: int,
+    first_name: str,
+    last_name: str | None = None,
+    username: str | None = None,
+    user_role: str = UserRole.UNKNOWN
+):
+    stmt = upsert(User).values(
+        {
+            "telegram_id": telegram_id,
+            "first_name": first_name,
+            "last_name": last_name,
+            "username": username,
+            "user_role": user_role
+        }
+    )
+    stmt = stmt.on_conflict_do_update(
+        index_elements=['telegram_id'],
+        set_=dict(
+            first_name=first_name,
+            last_name=last_name,
+            username=username,
+        ),
+    )
+    await session.execute(stmt)
+    await session.commit()
+
+async def get_users_id(session: AsyncSession) -> list:
+    stmt = select(User.telegram_id)
+    result = await session.execute(stmt)
+    return result.scalars().all()
+
+async def get_users_by_role(session: AsyncSession, role: UserRole) -> list:
+    stmt = select(User.telegram_id).where(User.user_role == role)
+    result = await session.execute(stmt)
+    return result.scalars().all()
+
+async def get_admins_id(session: AsyncSession) -> list:
+    stmt = select(User.telegram_id).where(User.user_role == UserRole.ADMIN)
+    result = await session.execute(stmt)
+    return result.scalars().all()
+
+async def get_super_admin_id(session: AsyncSession) -> list:
+    stmt = select(User.telegram_id).where(User.user_role == UserRole.SUPER_ADMIN)
+    result = await session.execute(stmt)
+    return result.scalars().first()

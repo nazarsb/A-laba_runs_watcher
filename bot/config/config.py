@@ -5,8 +5,6 @@ from environs import Env
 @dataclass
 class TgBot:
     token: str
-    albg_users: list[int]
-    admins: list[int]
 
 @dataclass
 class RedisConfig:
@@ -45,9 +43,6 @@ def load_config(path: str | None = None) -> Config:
     return Config(
         bot=TgBot(
             token=env('TOKEN'),
-            albg_users=list(map(int, env.list('ALBG_IDS'))),
-            admins=list(map(int, env.list('ADMINS'))),
-            
         ),
         redis=RedisConfig(
             port=env('REDIS_PORT'),

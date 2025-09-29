@@ -126,6 +126,11 @@ async def get_users_by_role(session: AsyncSession, role: UserRole) -> list:
     result = await session.execute(stmt)
     return result.scalars().all()
 
+async def get_users_exept_role(session: AsyncSession, role: UserRole) -> list:
+    stmt = select(User.telegram_id).where(User.user_role != role)
+    result = await session.execute(stmt)
+    return result.scalars().all()
+
 async def get_admins_id(session: AsyncSession) -> list:
     stmt = select(User.telegram_id).where(User.user_role == UserRole.ADMIN)
     result = await session.execute(stmt)

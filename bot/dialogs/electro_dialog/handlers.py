@@ -14,7 +14,8 @@ from aiogram_dialog.widgets.input import ManagedTextInput, TextInput
 
 from bot.dialogs.electro_dialog.states import ElectroSG
 from bot.dialogs.start_dialog.states import StartSG
-from bot.db_requests.db_requests import insert_event
+from bot.db_requests.db_requests import insert_event, get_users_exept_role
+from database.enums.enums import UserRole
 
 
 logger = logging.getLogger(__name__)
@@ -88,11 +89,12 @@ async def complete_new_event_plan(callback: CallbackQuery, button: Button, dialo
                        session=dialog_manager.middleware_data.get('session'))
     await callback.answer('Событие запланировано. Просмотр событий - по команде /show_events', show_alert=True)
     bot = dialog_manager.middleware_data.get('bot')
-    for id in dialog_manager.middleware_data.get('albg_users'):
+    active_users = await get_users_exept_role(session=dialog_manager.middleware_data.get('session'), role=UserRole.UNKNOWN)
+    for id in active_users:
         with suppress(BaseException):
             await bot.send_message(
                 chat_id=id,
-                text=f'⚠️ Запланировано отключение электичества на <b>{dialog_manager.dialog_data.get("run_start_date")} - {dialog_manager.dialog_data.get("run_end_date")}</b>. \
+                text=f'⚠️ Запланировано отключение электичества на <b>{dialog_manager.dialog_data.get("event_start_date")} - {dialog_manager.dialog_data.get("event_end_date")}</b>. \
                 \nПросмотр событий - по команде \n<b>/show_events</b>'
             )
     await dialog_manager.done()

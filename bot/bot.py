@@ -50,11 +50,7 @@ async def main() -> None:
 
     logger.info("Setting up dialogs")
     # bg_factory = setup_dialogs(dp)
-    setup_dialogs(dp)
-
-    dp.workflow_data.update({'albg_users': config.bot.albg_users,
-                             'admins': config.bot.admins})
-    
+    setup_dialogs(dp)    
 
     dp.update.outer_middleware(session.DbSessionMiddleware(Sessionmaker))
     dp.update.middleware(logging_middleware.LoggingMiddleware())

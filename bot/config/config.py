@@ -26,6 +26,7 @@ class DbConfig:
     pg_host: str
     pg_port: int
     pg_db_name: str
+    is_local: bool
 
 @dataclass
 class Config:
@@ -46,6 +47,7 @@ def load_config(path: str | None = None) -> Config:
             token=env('TOKEN'),
             albg_users=list(map(int, env.list('ALBG_IDS'))),
             admins=list(map(int, env.list('ADMINS'))),
+            
         ),
         redis=RedisConfig(
             port=env('REDIS_PORT'),
@@ -62,6 +64,7 @@ def load_config(path: str | None = None) -> Config:
             pg_host=env('POSTGRES_HOST'),
             pg_port=env('POSTGRES_PORT'),
             pg_db_name=env('POSTGRES_DB'),
+            is_local=env.bool('IS_LOCAL')
 
         )
     )

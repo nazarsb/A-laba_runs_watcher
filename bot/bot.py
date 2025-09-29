@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from bot.config.config import Config, load_config
 from bot.handlers import get_routers
 from bot.dialogs import get_dialogs
-from bot.middlewares import albg_shield, logging_middleware, session
+from bot.middlewares import albg_shield, logging_middleware, session, track_all_users
 from bot.dialogs.new_run_dialog.dialogs import new_run_dialog
 from bot.dialogs.start_dialog.dialogs import start_dialog
 from bot.keyboards.menu_buttons import get_main_menu_commands
@@ -38,6 +38,7 @@ async def main() -> None:
               default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher(storage=storage)
 
+    logger.info('Setting up sqlalchemy')
     engine = create_async_engine(
         url=str('postgresql+psycopg://'+config.db.pg_user+':'+config.db.pg_password+'@' \
                 +config.db.pg_host+':'+str(config.db.pg_port)+'/'+config.db.pg_db_name) \
@@ -49,17 +50,14 @@ async def main() -> None:
 
     logger.info("Setting up dialogs")
     # bg_factory = setup_dialogs(dp)
-    setup_dialogs(dp)
+    setup_dialogs(dp)    
 
-    dp.workflow_data.update({'albg_users': config.bot.albg_users,
-                             'admins': config.bot.admins})
-    
+    dp.update.outer_middleware(session.DbSessionMiddleware(Sessionmaker))
     dp.update.middleware(logging_middleware.LoggingMiddleware())
+    dp.update.outer_middleware(track_all_users.TrackAllUsersMiddleware())
     dp.update.outer_middleware(albg_shield.AlbgShieldMiddleware())
 
     await bot.set_my_commands(get_main_menu_commands())
-
-    dp.update.outer_middleware(session.DbSessionMiddleware(Sessionmaker))
 
     # try:
         # await asyncio.gather(

@@ -1,5 +1,5 @@
 from .base import Base
-from .models.models import (Event, EventType, Instrument, Reagent) # noqa
+from .models.models import (Event, EventType, Instrument, Reagent, User) # noqa
 
 __all__ = [
 'Base',
@@ -7,4 +7,5 @@ __all__ = [
 'EventType',
 'Instrument',
 'Reagent',
+'User'
 	]

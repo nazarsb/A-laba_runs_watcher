@@ -92,7 +92,7 @@ async def complete_new_event_plan(callback: CallbackQuery, button: Button, dialo
         with suppress(BaseException):
             await bot.send_message(
                 chat_id=id,
-                text=f'⚠️ Запланировано отключение электичества на <b>{dialog_manager.dialog_data.get("run_start_date")} - {dialog_manager.dialog_data.get("run_end_date")}</b>. \
+                text=f'⚠️ Запланировано отключение электичества на <b>{dialog_manager.dialog_data.get("event_start_date")} - {dialog_manager.dialog_data.get("event_end_date")}</b>. \
                 \nПросмотр событий - по команде \n<b>/show_events</b>'
             )
     await dialog_manager.done()

@@ -72,16 +72,15 @@ electro_dialog = Dialog(
                 True : Multi(
                     Format('<b>Начало отключения:</b> {event_start_date} в {time1}'),
                     Format('<b>Конец отключения:</b> {event_end_date} в {time2}'),
-                    Const('\nВсе верно?')
                 ),
                 False: Multi(
                     Format('<b>Начало отключения:</b> {event_start_date}'),
                     Format('<b>Конец отключения:</b> {event_end_date}'),
-                    Const('\nВсе верно?')
-                )
+                ),
             },
             selector='is_there_time',
         ),
+        Const('\nВсе верно?'),
         Button(Const('Да'), id='complete', on_click=complete_new_event_plan),
         Back(Const('Назад'), id='back6'),
         state=ElectroSG.summary

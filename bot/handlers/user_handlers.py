@@ -24,4 +24,7 @@ async def message_process(message: Message, dialog_manager: DialogManager):
 
 @router.message(Command(commands='cancel'))
 async def message_process(message: Message, dialog_manager: DialogManager):
-    await dialog_manager.done()
+    try:
+        await dialog_manager.done()
+    except Exception as e:
+        logger.error(e)

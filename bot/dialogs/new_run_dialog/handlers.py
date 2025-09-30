@@ -36,8 +36,13 @@ async def instrument_selection(callback: CallbackQuery, widget: Select, dialog_m
     await dialog_manager.switch_to(state=RunSG.run_date)
 
 async def click_on_date(callback: ChatEvent, widget: Calendar, dialog_manager: DialogManager, selected_date: date,):
-    dialog_manager.dialog_data.update({'run_start_date': str(selected_date)})
-    await dialog_manager.switch_to(state=RunSG.reagent_kit)
+    if selected_date >= date.today():
+        dialog_manager.dialog_data.update({'run_start_date': str(selected_date)})
+        await dialog_manager.switch_to(state=RunSG.reagent_kit)
+    else:
+        await callback.answer(text=f'{selected_date} уже в прошлом. \nСегодня {str(date.today())}. \nВыберете актуальную дату.',
+                              show_alert=True)
+
 
 async def reagent_selection(callback: CallbackQuery, widget: Select, dialog_manager: DialogManager, selected_reagent: str):
     run_duration = await get_runtime(selected_reagent, dialog_manager.middleware_data.get('session'))
@@ -48,6 +53,7 @@ async def reagent_selection(callback: CallbackQuery, widget: Select, dialog_mana
 
 async def complete_new_run_plan(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
     await insert_event(event_type_name=dialog_manager.start_data.get('event_type'),
+                       event_name=dialog_manager.dialog_data.get('event_name'),
                        instrument_name=dialog_manager.dialog_data.get('instrument'),
                        reagent_name=dialog_manager.dialog_data.get('reagent'),
                        event_start_date=dialog_manager.dialog_data.get('run_start_date'),

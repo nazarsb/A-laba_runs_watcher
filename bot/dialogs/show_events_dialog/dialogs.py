@@ -7,7 +7,12 @@ from bot.dialogs.show_events_dialog.states import ShowEventsSG
 
 
 def is_run_selector(data: dict, case: Case, dialog_manager: DialogManager):
-    return False if not data['item']['instrument'] else True
+    if data['item']['instrument']:
+        return 'run'
+    if data['item']['event_name']:
+        return 'another_event'
+    else:
+        return 'electro'
 
 def is_there_event_selector(data: dict, case: Case, dialog_manager: DialogManager): 
     return 'events' in data and bool(data['events'])
@@ -24,14 +29,18 @@ show_events_dialog = Dialog(
         List(
             field=Case(
                         texts={
-                            True: Multi(
+                            'run': Multi(
                                     Format('<b>🚀 {item[event_type]}:</b> \
                                             <b>\n{item[date_start]} - {item[date_end]}</b> \
                                             \n{item[instrument]} на {item[reagent]}'
                                            ),
                             ),
-                            False: Multi(
+                            'electro': Multi(
                                     Format('<b>⚠️ {item[event_type]}:</b> \
+                                            <b>\n{item[date_start]} - {item[date_end]}</b>')
+                                    ),
+                            'another_event': Multi(
+                                    Format('<b>⚠️ {item[event_name]}:</b> \
                                             <b>\n{item[date_start]} - {item[date_end]}</b>')
                                     ),
                         },

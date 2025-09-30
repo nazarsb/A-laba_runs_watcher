@@ -26,12 +26,23 @@ async def command_start_process(callback: CallbackQuery, button: Button, dialog_
     await dialog_manager.start(state=StartSG.start)
 
 async def click_on_start_date(callback: ChatEvent, widget: Calendar, dialog_manager: DialogManager, selected_date: date,):
-    dialog_manager.dialog_data.update({'event_start_date': str(selected_date)})
-    await dialog_manager.switch_to(state=ElectroSG.event_end_date)
+    if selected_date >= date.today():
+        dialog_manager.dialog_data.update({'event_start_date': str(selected_date)})
+        await dialog_manager.switch_to(state=ElectroSG.event_end_date)
+    else:
+        await callback.answer(text=f'{selected_date} уже в прошлом. \nСегодня {str(date.today())}. \nВыберете актуальную дату.',
+                              show_alert=True)
+
 
 async def click_on_end_date(callback: ChatEvent, widget: Calendar, dialog_manager: DialogManager, selected_date: date,):
-    dialog_manager.dialog_data.update({'event_end_date': str(selected_date)})
-    await dialog_manager.switch_to(state=ElectroSG.event_time)
+    start_date = date.fromisoformat(dialog_manager.dialog_data.get('event_start_date'))
+    if selected_date >= start_date:
+        dialog_manager.dialog_data.update({'event_end_date': str(selected_date)})
+        await dialog_manager.switch_to(state=ElectroSG.event_time)
+    else:
+        await callback.answer(text=f'Ход времени не изменить. {selected_date} было до {str(start_date)}. \nВыберете актуальную дату.',
+                              show_alert=True)
+
 
 async def click_on_time1(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
     await dialog_manager.switch_to(state=ElectroSG.event_start_time)
@@ -40,7 +51,7 @@ async def click_on_time2(callback: CallbackQuery, button: Button, dialog_manager
     await dialog_manager.switch_to(state=ElectroSG.summary)
 
 def check_time(text: str):
-    date_time = parse(text, dayfirst=True)
+    date_time = parse(text, dayfirst=True, fuzzy=True)
     time = date_time.time() 
     if time:
         return {"time": time.strftime("%H:%M")}
@@ -79,6 +90,7 @@ async def go_summary(callback: CallbackQuery, button: Button, dialog_manager: Di
 
 async def complete_new_event_plan(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
     await insert_event(event_type_name=dialog_manager.start_data.get('event_type'),
+                       event_name=dialog_manager.dialog_data.get('event_name'),
                        instrument_name=dialog_manager.dialog_data.get('instrument'),
                        reagent_name=dialog_manager.dialog_data.get('reagent'),
                        event_start_date=dialog_manager.dialog_data.get('event_start_date'),

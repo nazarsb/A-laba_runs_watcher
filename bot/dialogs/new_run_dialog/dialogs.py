@@ -55,8 +55,8 @@ new_run_dialog = Dialog(
         Format('<b>Инструмент:</b> {summary[instrument]}'),
         Format('<b>Дата запуска:</b> {summary[run_start_date]}'),
         Format('<b>Реагент:</b> {summary[reagent]}'),
-        Button(Const('Назад'), id='back3', on_click=go_back),
         Button(Const('Завершить'), id='complete', on_click=complete_new_run_plan),
+        Button(Const('Назад'), id='back3', on_click=go_back),
         getter=getter_summary,
         state=RunSG.summary
     ),

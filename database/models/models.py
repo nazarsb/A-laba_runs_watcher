@@ -10,6 +10,7 @@ class Event(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     event_type_id: Mapped[int] = mapped_column(ForeignKey('event_types.id'), nullable=False)
+    event_name: Mapped[str | None] = mapped_column(String(64))
     instrument_id: Mapped[int | None] = mapped_column(ForeignKey('instruments.id'))
     reagent_id: Mapped[int | None] = mapped_column(ForeignKey('reagents.id'))
     event_start_date: Mapped[str] = mapped_column(String(64), nullable=False)

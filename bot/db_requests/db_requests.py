@@ -43,6 +43,7 @@ async def get_runtime(selected_reagents: str, session: AsyncSession) -> list:
     
 
 async def insert_event(event_type_name: str,
+                       event_name: str | None,
                        instrument_name: str | None,
                        reagent_name: str | None,
                        event_start_date: str,
@@ -54,6 +55,7 @@ async def insert_event(event_type_name: str,
 
     stmt = insert(Event).values(
         event_type_id=(select(EventType.id).where(EventType.name == event_type_name)),
+        event_name=event_name if event_name else None,
         instrument_id=(select(Instrument.id).where(Instrument.name == instrument_name)),
         reagent_id=(select(Reagent.id).where(Reagent.name == reagent_name)),
         event_start_date=event_start_date,
@@ -71,13 +73,14 @@ async def get_events(session: AsyncSession) -> list:
                                  joinedload(Event.reagent), 
                                  joinedload(Event.event_type)) \
     .filter(cast(Event.event_end_date, Date) >= func.current_date()) \
-    .order_by(Event.event_start_date)
+    .order_by(Event.event_start_date, Event.event_end_date)
     result = await session.execute(stmt)
     events = result.scalars().all()
     
     return [{
         'id': event.id,
         'event_type': event.event_type.name,
+        'event_name': event.event_name,
         'instrument': event.instrument.name if event.instrument else None,
         'reagent': event.reagent.name if event.reagent else None,
         'date_start': event.event_start_date,

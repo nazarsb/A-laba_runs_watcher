@@ -1,6 +1,7 @@
 import logging
 
 from aiogram import Bot, Dispatcher
+from aiogram.types import BotCommand, BotCommandScopeDefault, BotCommandScopeAllPrivateChats, BotCommandScopeAllGroupChats, BotCommandScopeChatMember, BotCommandScopeChat
 from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -18,7 +19,9 @@ from bot.dialogs import get_dialogs
 from bot.middlewares import albg_shield, logging_middleware, session, track_all_users
 from bot.dialogs.new_run_dialog.dialogs import new_run_dialog
 from bot.dialogs.start_dialog.dialogs import start_dialog
-from bot.keyboards.menu_buttons import get_main_menu_commands
+from bot.keyboards.menu_buttons import get_main_menu_commands, menu_set_up, menu_drop_down
+
+from pprint import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +60,8 @@ async def main() -> None:
     dp.update.outer_middleware(track_all_users.TrackAllUsersMiddleware())
     dp.update.outer_middleware(albg_shield.AlbgShieldMiddleware())
 
-    await bot.set_my_commands(get_main_menu_commands())
+    dp.startup.register(menu_set_up)
+    dp.shutdown.register(menu_drop_down)
 
     # try:
         # await asyncio.gather(

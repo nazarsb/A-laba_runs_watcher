@@ -31,13 +31,17 @@ The system provides guided workflows for creating three types of laboratory even
 **Role-Based Security**
 
 The AlbgShieldMiddleware ensures only authorized personnel can access bot functionality, with automatic user role tracking and access denial notifications.
+
 **Real-Time Notifications**
 
 When events are created, the system uses get_users_exept_role to identify active users and broadcasts notifications to the entire laboratory team.
+
 **Persistent Dialog State**
 
 Redis-backed state management ensures dialog sessions survive system restarts and maintain user context across interactions.
+
 **Container-Based Deployment**
 Full Docker Compose setup with separate development and production profiles, including health checks and logging configuration.
+
 
 

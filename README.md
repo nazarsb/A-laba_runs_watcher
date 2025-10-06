@@ -43,5 +43,9 @@ Redis-backed state management ensures dialog sessions survive system restarts an
 **Container-Based Deployment**
 Full Docker Compose setup with separate development and production profiles, including health checks and logging configuration.
 
+**TO DO**
+--
+- add i18n
+- add NATS notification service
 
 

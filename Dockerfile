@@ -12,6 +12,11 @@ WORKDIR /app
 
 COPY pyproject.toml poetry.lock* ./
 COPY . .
+RUN chmod -R +x scheduled_tasks/cron_scripts/*
+
+COPY ./scheduled_tasks/cron_jobs/* /etc/cron.d/
+RUN chmod -R 0644 /etc/cron.d/* && \
+    touch /var/log/cron.log
 
 RUN poetry install --no-interaction --no-ansi
 

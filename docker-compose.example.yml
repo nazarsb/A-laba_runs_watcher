@@ -97,7 +97,7 @@ services:
 
   db_migrations_prod:
     container_name: db_migrations
-    env_file: .env
+    env_file: .env.prod
     image: my_bot
     restart: no
     command: ["alembic", "upgrade", "head"]
@@ -116,7 +116,7 @@ services:
 
   bot:
     container_name: bot
-    env_file: .env
+    env_file: .env.prod
     image: my_bot
     restart: ${DOCKER_RESTART_POLICY}
     environment:
@@ -128,6 +128,28 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - custom_network
+    profiles:
+      - prod
+
+  scheduled_tasks:
+    container_name: scheduled_tasks
+    env_file: .env.prod
+    image: my_bot
+    restart: ${DOCKER_RESTART_POLICY}
+    init: true
+    command: ["crond", "-f", "-L", "/dev/stdout"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      db_migrations_prod:
+        condition: service_completed_successfully
     logging:
       driver: "json-file"
       options:

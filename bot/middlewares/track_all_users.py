@@ -19,17 +19,15 @@ class TrackAllUsersMiddleware(BaseMiddleware):
     ) -> Any:
         
         session: AsyncSession = data.get("session")
-        users = await get_users_id(session=session)
         user = data.get("event_from_user")
 
-        if user.id not in users:
-            await upsert_user(
-                session=session,
-                telegram_id=user.id,
-                first_name=user.first_name,
-                last_name=user.last_name,
-                username=user.username,
-                user_role=UserRole.UNKNOWN
-            )
+        await upsert_user(
+            session=session,
+            telegram_id=user.id,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            username=user.username,
+            user_role=UserRole.UNKNOWN
+        )
 
         return await handler(event, data)

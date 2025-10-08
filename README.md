@@ -36,11 +36,16 @@ The AlbgShieldMiddleware ensures only authorized personnel can access bot functi
 
 When events are created, the system uses get_users_exept_role to identify active users and broadcasts notifications to the entire laboratory team.
 
+**Weekly Notifications**
+
+Every Friday the bot sends notifications about planned events to all users except those with the UNKNOWN role.
+
 **Persistent Dialog State**
 
 Redis-backed state management ensures dialog sessions survive system restarts and maintain user context across interactions.
 
 **Container-Based Deployment**
+
 Full Docker Compose setup with separate development and production profiles, including health checks and logging configuration.
 
 **TO DO**

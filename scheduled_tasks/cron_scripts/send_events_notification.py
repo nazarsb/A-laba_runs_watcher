@@ -31,7 +31,7 @@ async def send_events_notification(bot: Bot, session_factory: async_sessionmaker
     async with session_factory() as session:
         events = await get_events(session)
         users = await get_users_exept_role(session, UserRole.UNKNOWN)
-        message_no_text = '<u><b>📆 Запланированые события:</b></u>\n<b>В А-лабе всё спокойно.\nЗапланированных событий нет. 😴</b>'
+        message_no_text = '<b>В А-лабе всё спокойно.\nЗапланированных событий нет. 😴</b>'
         message_text = '<b>☝🏼 В А-лабе есть грядущие события. \nЖми команду <u>/show_events</u> чтоб получить подробности</b>\n'
 
         for user in users:

@@ -19,4 +19,5 @@ async def getter_reagents(dialog_manager: DialogManager, session: AsyncSession, 
 
 async def getter_summary(dialog_manager: DialogManager, **kwargs):
     return {'summary': dialog_manager.dialog_data, 
-            'event_type': dialog_manager.start_data.get('event_type')}
+            'event_type': dialog_manager.start_data.get('event_type'),
+            'is_qitan': True if dialog_manager.dialog_data.get('qitan_time') else False}

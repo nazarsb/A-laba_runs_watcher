@@ -8,6 +8,8 @@ from bot.dialogs.show_events_dialog.states import ShowEventsSG
 
 def is_run_selector(data: dict, case: Case, dialog_manager: DialogManager):
     if data['item']['instrument']:
+        if data['item']['instrument'] == 'Qnome-3841':
+            return 'qnome'
         return 'run'
     if data['item']['event_name']:
         return 'another_event'
@@ -32,9 +34,13 @@ show_events_dialog = Dialog(
                             'run': Multi(
                                     Format('<b>🚀 {item[event_type]}:</b> \
                                             <b>\n{item[date_start]} - {item[date_end]}</b> \
-                                            \n{item[instrument]} на {item[reagent]}'
-                                           ),
-                            ),
+                                            \n{item[instrument]} на {item[reagent]}'),
+                                    ),
+                            'qnome': Multi(
+                                    Format('<b>🚀 {item[event_type]}:</b> \
+                                            <b>\n{item[date_start]} - {item[date_end]}</b> \
+                                            \n{item[instrument]}'),
+                                    ),
                             'electro': Multi(
                                     Format('<b>⚠️ {item[event_type]}:</b> \
                                             <b>\n{item[date_start]} - {item[date_end]}</b>')

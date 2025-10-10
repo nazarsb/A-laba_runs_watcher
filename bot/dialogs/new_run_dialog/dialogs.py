@@ -1,11 +1,13 @@
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.text import Const, Format
-from aiogram_dialog.widgets.kbd import Button, Select, Calendar, Column, Group
+from aiogram_dialog.widgets.text import Const, Format, Case
+from aiogram_dialog.widgets.kbd import Button, Select, Calendar, Column, Group 
+from aiogram_dialog.widgets.input import TextInput, MessageInput
 
 from bot.dialogs.new_run_dialog.getters import getter_instruments, getter_reagents, getter_summary
 from bot.dialogs.new_run_dialog.states import RunSG   
 from bot.dialogs.new_run_dialog.handlers import (click_new_run, instrument_selection, click_on_date, reagent_selection, 
-                                        complete_new_run_plan, go_back, command_start_process)
+                                        complete_new_run_plan, go_back, command_start_process, success_qitantime_handler, 
+                                        error_qitantime_handler, check_duration)
 
 
 
@@ -49,12 +51,29 @@ new_run_dialog = Dialog(
             state=RunSG.reagent_kit
     ),
     Window(
+        Const('Введите длительность запуска <u><b>в часах</b></u>.'),
+        TextInput(
+            id='run_duration',
+            type_factory=check_duration,
+            on_success=success_qitantime_handler,
+            on_error=error_qitantime_handler
+        ),
+        Button(Const('Назад'), id='back3', on_click=go_back),
+        state=RunSG.run_duration
+    ),  
+    Window(
         Const('📝 Краткое описание события'),
         Const('Если все <b>ОК</b>, жмите <b>"Завершить"</b>.\n'),
         Format('<b>Запланированное событие:</b> {event_type}'),
         Format('<b>Инструмент:</b> {summary[instrument]}'),
         Format('<b>Дата запуска:</b> {summary[run_start_date]}'),
-        Format('<b>Реагент:</b> {summary[reagent]}'),
+        Case(
+            texts={
+                True: Format('<b>Длительность запуска:</b> {summary[qitan_time]} ч.'),
+                False: Format('<b>Реагент:</b> {summary[reagent]}'),
+            },
+            selector='is_qitan'
+        ),
         Button(Const('Завершить'), id='complete', on_click=complete_new_run_plan),
         Button(Const('Назад'), id='back3', on_click=go_back),
         getter=getter_summary,

@@ -7,6 +7,7 @@ from aiogram.filters import CommandStart
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import DialogManager, StartMode, ChatEvent
 from aiogram_dialog.widgets.kbd import Button, Select, Calendar
+from aiogram_dialog.widgets.input import ManagedTextInput, TextInput
 
 from database.enums.enums import UserRole
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -38,10 +39,40 @@ async def instrument_selection(callback: CallbackQuery, widget: Select, dialog_m
 async def click_on_date(callback: ChatEvent, widget: Calendar, dialog_manager: DialogManager, selected_date: date,):
     if selected_date >= date.today():
         dialog_manager.dialog_data.update({'run_start_date': str(selected_date)})
-        await dialog_manager.switch_to(state=RunSG.reagent_kit)
+        if dialog_manager.dialog_data.get('instrument') in ('Qnome-3841',):
+            await dialog_manager.switch_to(state=RunSG.run_duration)
+        else:
+            await dialog_manager.switch_to(state=RunSG.reagent_kit)
     else:
         await callback.answer(text=f'{selected_date} уже в прошлом. \nСегодня {str(date.today())}. \nВыберете актуальную дату.',
                               show_alert=True)
+
+
+def check_duration(text: str): 
+    if 1 <= int(text) <= 72:
+        return {"run_duration": int(text)}
+    raise ValueError
+
+
+async def success_qitantime_handler(
+        message: Message, 
+        widget: ManagedTextInput, 
+        dialog_manager: DialogManager, 
+        result: dict):
+    dialog_manager.dialog_data.update({'qitan_time': result.get('run_duration')})
+    run_start_date = dialog_manager.dialog_data.get('run_start_date')
+    dialog_manager.dialog_data.update({'run_end_date': (datetime.strptime(run_start_date, '%Y-%m-%d') + timedelta(hours=result.get('run_duration'))).strftime('%Y-%m-%d')})
+    await dialog_manager.switch_to(state=RunSG.summary)
+
+async def error_qitantime_handler(
+        message: Message, 
+        widget: ManagedTextInput, 
+        dialog_manager: DialogManager, 
+        error: ValueError):
+    await message.answer(
+        text='Вы ввели некорректный формат длительности. Просто напишите число - сколько часов будет длиться запуск?',
+    )
+
 
 
 async def reagent_selection(callback: CallbackQuery, widget: Select, dialog_manager: DialogManager, selected_reagent: str):

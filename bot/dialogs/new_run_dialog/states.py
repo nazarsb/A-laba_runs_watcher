@@ -4,5 +4,6 @@ class RunSG(StatesGroup):
     new_run = State()
     run_date = State()
     reagent_kit = State()
+    run_duration = State()
     summary = State()
     edit = State()

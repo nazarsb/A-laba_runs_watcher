@@ -2,15 +2,12 @@ from contextlib import suppress
 from datetime import date, datetime, timedelta
 
 import logging
-from aiogram import Bot, Router
-from aiogram.filters import CommandStart
 from aiogram.types import CallbackQuery, Message
-from aiogram_dialog import DialogManager, StartMode, ChatEvent
+from aiogram_dialog import DialogManager, ChatEvent
 from aiogram_dialog.widgets.kbd import Button, Select, Calendar
-from aiogram_dialog.widgets.input import ManagedTextInput, TextInput
+from aiogram_dialog.widgets.input import ManagedTextInput
 
 from database.enums.enums import UserRole
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.dialogs.new_run_dialog.states import RunSG
 from bot.dialogs.start_dialog.states import StartSG
@@ -74,6 +71,17 @@ async def error_qitantime_handler(
     )
 
 
+async def switch_to_rundate(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
+    await dialog_manager.switch_to(state=RunSG.run_date)
+
+
+async def switch_to_duration_or_reagent(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
+    if not dialog_manager.dialog_data.get('qitan_time'):
+        await dialog_manager.switch_to(state=RunSG.reagent_kit)
+    else:
+        await dialog_manager.switch_to(state=RunSG.run_duration)
+        dialog_manager.dialog_data.pop('qitan_time')
+
 
 async def reagent_selection(callback: CallbackQuery, widget: Select, dialog_manager: DialogManager, selected_reagent: str):
     run_duration = await get_runtime(selected_reagent, dialog_manager.middleware_data.get('session'))
@@ -81,6 +89,7 @@ async def reagent_selection(callback: CallbackQuery, widget: Select, dialog_mana
     dialog_manager.dialog_data.update({'reagent': selected_reagent,
                                        'run_end_date': (datetime.strptime(run_start_date, '%Y-%m-%d') + timedelta(hours=run_duration+12)).strftime('%Y-%m-%d')})
     await dialog_manager.switch_to(state=RunSG.summary)
+
 
 async def complete_new_run_plan(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
     await insert_event(event_type_name=dialog_manager.start_data.get('event_type'),
@@ -104,3 +113,5 @@ async def complete_new_run_plan(callback: CallbackQuery, button: Button, dialog_
                 \nПросмотр событий - по команде \n<b>/show_events</b>'
             )
     await dialog_manager.done()
+
+

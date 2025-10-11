@@ -1,13 +1,13 @@
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.text import Const, Format, Case
 from aiogram_dialog.widgets.kbd import Button, Select, Calendar, Column, Group 
-from aiogram_dialog.widgets.input import TextInput, MessageInput
+from aiogram_dialog.widgets.input import TextInput
 
 from bot.dialogs.new_run_dialog.getters import getter_instruments, getter_reagents, getter_summary
 from bot.dialogs.new_run_dialog.states import RunSG   
-from bot.dialogs.new_run_dialog.handlers import (click_new_run, instrument_selection, click_on_date, reagent_selection, 
+from bot.dialogs.new_run_dialog.handlers import (instrument_selection, click_on_date, reagent_selection, 
                                         complete_new_run_plan, go_back, command_start_process, success_qitantime_handler, 
-                                        error_qitantime_handler, check_duration)
+                                        error_qitantime_handler, check_duration, switch_to_rundate, switch_to_duration_or_reagent)
 
 
 
@@ -58,7 +58,7 @@ new_run_dialog = Dialog(
             on_success=success_qitantime_handler,
             on_error=error_qitantime_handler
         ),
-        Button(Const('Назад'), id='back3', on_click=go_back),
+        Button(Const('Назад'), id='to_run_date', on_click=switch_to_rundate),
         state=RunSG.run_duration
     ),  
     Window(
@@ -75,7 +75,7 @@ new_run_dialog = Dialog(
             selector='is_qitan'
         ),
         Button(Const('Завершить'), id='complete', on_click=complete_new_run_plan),
-        Button(Const('Назад'), id='back3', on_click=go_back),
+        Button(Const('Назад'), id='either_duration_or_reagent', on_click=switch_to_duration_or_reagent),
         getter=getter_summary,
         state=RunSG.summary
     ),

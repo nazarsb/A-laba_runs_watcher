@@ -1,7 +1,7 @@
 from typing import Callable, Awaitable, Dict, Any, cast
 
 from aiogram import BaseMiddleware
-from aiogram.types import TelegramObject, Message
+from aiogram.types import TelegramObject
 from cachetools import TTLCache
 from sqlalchemy.ext.asyncio import AsyncSession
 

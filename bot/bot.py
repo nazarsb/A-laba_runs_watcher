@@ -9,17 +9,20 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.storage.base import DefaultKeyBuilder
 
 from aiogram_dialog import setup_dialogs
+from aiogram_dialog.api.entities import DIALOG_EVENT_NAME
 
+from fluentogram import TranslatorHub
 from redis.asyncio.client import Redis
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from bot.config.config import Config, load_config
 from bot.handlers import get_routers
 from bot.dialogs import get_dialogs
-from bot.middlewares import albg_shield, logging_middleware, session, track_all_users
+from bot.middlewares import albg_shield, logging_middleware, session, track_all_users, i18n
 from bot.dialogs.new_run_dialog.dialogs import new_run_dialog
 from bot.dialogs.start_dialog.dialogs import start_dialog
 from bot.keyboards.menu_buttons import get_main_menu_commands, menu_set_up, menu_drop_down
+from bot.i18n.translator_hub import create_translator_hub
 
 from pprint import pprint
 
@@ -48,18 +51,34 @@ async def main() -> None:
                 + "?options=-c%20timezone=Europe/Moscow")
     Sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
 
+    translator_hub: TranslatorHub = create_translator_hub()
+    dp.workflow_data.update(translator_hub=translator_hub)
+
     logger.info("Including routers and dialogs")
     dp.include_routers(*get_routers(), *get_dialogs())
+
+
+    logger.info("Including middlewares")
+    dp.update.outer_middleware(session.DbSessionMiddleware(Sessionmaker))
+    dp.update.middleware(logging_middleware.LoggingMiddleware())
+    dp.update.outer_middleware(track_all_users.TrackAllUsersMiddleware())
+    dp.update.outer_middleware(albg_shield.AlbgShieldMiddleware())
+    dp.update.middleware(i18n.TranslatorRunnerMiddleware())
+
 
     logger.info("Setting up dialogs")
     # bg_factory = setup_dialogs(dp)
     setup_dialogs(dp)    
 
-    dp.update.outer_middleware(session.DbSessionMiddleware(Sessionmaker))
-    dp.update.middleware(logging_middleware.LoggingMiddleware())
-    dp.update.outer_middleware(track_all_users.TrackAllUsersMiddleware())
-    dp.update.outer_middleware(albg_shield.AlbgShieldMiddleware())
+    logger.info("Including observers middlewares")
+    dp.observers[DIALOG_EVENT_NAME].outer_middleware(session.DbSessionMiddleware(Sessionmaker))
+    dp.observers[DIALOG_EVENT_NAME].middleware(track_all_users.TrackAllUsersMiddleware())
+    dp.observers[DIALOG_EVENT_NAME].middleware(albg_shield.AlbgShieldMiddleware())
+    dp.observers[DIALOG_EVENT_NAME].outer_middleware(i18n.TranslatorRunnerMiddleware())
 
+
+
+    logger.info("Setting up default commands")
     dp.startup.register(menu_set_up)
     dp.shutdown.register(menu_drop_down)
 

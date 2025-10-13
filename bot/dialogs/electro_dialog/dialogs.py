@@ -1,89 +1,80 @@
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.text import Const, Format, Case, Multi
+from aiogram_dialog.widgets.text import Format, Case
 from aiogram_dialog.widgets.kbd import (Button, Calendar, Back)
 from aiogram_dialog.widgets.input import TextInput
 
 from bot.dialogs.electro_dialog.handlers import (click_on_start_date, click_on_end_date, 
                                                  command_start_process, complete_new_event_plan, 
                                                  click_on_time1, check_time, error_time_handler, success_time1_handler,
-                                                 success_time2_handler, go_summary)
+                                                 success_time2_handler, go_summary, go_back_from_summary)
 from bot.dialogs.electro_dialog.states import ElectroSG
-from bot.dialogs.electro_dialog.getters import get_event_dates_time
+from bot.dialogs.electro_dialog.getters import (get_summary, get_event_dates, 
+                                                get_event_is_time, get_event_start_time,
+                                                get_event_end_time)
+from bot.dialogs.widgets.i18n import I18nFormat
 
 
 
 
 electro_dialog = Dialog(
     Window(
-        Const('⏳ В какой день <b>начало</b> отключения?'),
+        I18nFormat('electro_start_date'),
         Calendar(id='date1', on_click=click_on_start_date),
-        Button(Const('Назад'), id='back1', on_click=command_start_process),
+        Button(I18nFormat('back'), id='back1', on_click=command_start_process),
         state=ElectroSG.event_start_date
     ),
 
     Window(
-        Format('⏳ <b>Начало отключения</b>: {event_start_date}'),
-        Const('⌛️ А в какой <b>ВЕРНУТ</b> электричество?'),
+        Format('{electro_end_date}'),
         Calendar(id='date2', on_click=click_on_end_date),
-        Back(Const('Назад'), id='back2'),
+        Back(I18nFormat('back'), id='back2'),
         state=ElectroSG.event_end_date,
+        getter=get_event_dates
     ),
 
     Window(
-        Format('🗓 Отключение будет в дни: \n<b>{event_start_date} - {event_end_date}</b>'),
-        Const('<i>Хотите указать конкретное время отключения?</i>'),
-        Button(Const('Да'), id='time1', on_click=click_on_time1),
-        Button(Const('Нет'), id='time2', on_click=go_summary),
-        Back(Const('Назад'), id='back3'),
+        Format('{is_time_question}'),
+        Button(I18nFormat('yes'), id='yes', on_click=click_on_time1),
+        Button(I18nFormat('no'), id='no', on_click=go_summary),
+        Back(I18nFormat('back'), id='back3'),
         state=ElectroSG.event_time,
+        getter=get_event_is_time
     ),
 
     Window(
-        Format('🗓 Отключение будет в дни: <b>{event_start_date} - {event_end_date}</b>'),
-        Const('Введите время <b>НАЧАЛА</b> отключения'),
-        Const('<b><i>Формат - ЧЧ:ММ</i></b>'),
+        Format('{elcetro_start_time}'),
         TextInput(id='time1',
                   type_factory=check_time,
                   on_success=success_time1_handler,
                   on_error=error_time_handler),
-        Back(Const('Назад'), id='back4'),
+        Back(I18nFormat('back'), id='back4'),
         state=ElectroSG.event_start_time,
+        getter=get_event_start_time
     ),
 
     Window(
-        Format('🗓 Отключение будет в дни: <b>{event_start_date} - {event_end_date}</b>'),
-        Format('Время начала отключения: <b>{time1}</b>'),
-        Const('В какое время <b>ОКОНЧАНИЯ</b> отключения?'),
-        Const('<b><i>Формат - ЧЧ:ММ</i></b>'),
+        Format('{electro_end_time}'),
         TextInput(id='time2',
                   type_factory=check_time,
                   on_success=success_time2_handler,
                   on_error=error_time_handler),
-        Back(Const('Назад'), id='back5'),
+        Back(I18nFormat('back'), id='back5'),
         state=ElectroSG.event_end_time,
+        getter=get_event_end_time
     ),
 
     Window(
-        Const('📝 Краткое описание события'),
-        Const('Если все <b>ОК</b>, жмите <b>"Да"</b>.\n'),
-        Format('<b>Тип события:</b> {event_type}\n'),
+        I18nFormat('summary_pretext'),
         Case(
             texts={
-                True : Multi(
-                    Format('<b>Начало отключения:</b> {event_start_date} в {time1}'),
-                    Format('<b>Конец отключения:</b> {event_end_date} в {time2}'),
-                ),
-                False: Multi(
-                    Format('<b>Начало отключения:</b> {event_start_date}'),
-                    Format('<b>Конец отключения:</b> {event_end_date}'),
-                ),
+                True : Format('{electro_summary_with_time}'),
+                False: Format('{electro_summary_wo_time}'),
             },
             selector='is_there_time',
         ),
-        Const('\nВсе верно?'),
-        Button(Const('Да'), id='complete', on_click=complete_new_event_plan),
-        Back(Const('Назад'), id='back6'),
-        state=ElectroSG.summary
+        Button(I18nFormat('yes'), id='complete', on_click=complete_new_event_plan),
+        Button(I18nFormat('back'), id='back_frm_sum', on_click=go_back_from_summary),
+        state=ElectroSG.summary,
+        getter=get_summary
     ),
-    getter=get_event_dates_time
 )

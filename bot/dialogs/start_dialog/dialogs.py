@@ -14,9 +14,9 @@ start_dialog = Dialog(
         Format('Привет, {name}!\n\n'
                'Запланировать новое событие?\n'
                'Еще можешь выбирать команды в меню внизу слева.', when='is_first'),
-        I18nFormat('start-message'),
-        Button(text=I18nFormat('new-run'), id='new_run', on_click=click_new_run),
-        Button(text=I18nFormat('electro-turn-off'), id='new_event', on_click=click_new_event),
+        I18nFormat('start_message'),
+        Button(text=I18nFormat('new_run'), id='new_run', on_click=click_new_run),
+        Button(text=I18nFormat('electro_turn_off'), id='new_event', on_click=click_new_event),
         Button(I18nFormat('another_event'), id='else_event', on_click=click_alother_event),
         getter=getter_user,
         state=StartSG.start

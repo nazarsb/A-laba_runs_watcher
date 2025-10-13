@@ -8,12 +8,12 @@ from bot.dialogs.new_run_dialog.states import RunSG
 from bot.dialogs.new_run_dialog.handlers import (instrument_selection, click_on_date, reagent_selection, 
                                         complete_new_run_plan, go_back, command_start_process, success_qitantime_handler, 
                                         error_qitantime_handler, check_duration, switch_to_rundate, switch_to_duration_or_reagent)
-
+from bot.dialogs.widgets.i18n import I18nFormat
 
 
 new_run_dialog = Dialog(
     Window(
-        Const('На каком <b>приборе</b> запускаемся?'),
+        I18nFormat('new_run_instruments'),
         Column(
         Select(
             Format('{item[0]}'),
@@ -22,18 +22,18 @@ new_run_dialog = Dialog(
             items='instruments',
             on_click=instrument_selection,
         )),
-        Button(Const('Назад'), id='back0', on_click=command_start_process),
+        Button(I18nFormat('back'), id='back0', on_click=command_start_process),
         getter=getter_instruments,
         state=RunSG.new_run
     ),
     Window(
-        Const('Дата <b>НАЧАЛА</b> запуска'),
+        I18nFormat('new_run_start_date'),
         Calendar(id='date', on_click=click_on_date),
-        Button(Const('Назад'), id='back1', on_click=go_back),
+        Button(I18nFormat('back'), id='back1', on_click=go_back),
         state=RunSG.run_date
     ),
     Window(
-        Const('Какой <b>набор</b> будем использовать? \n\n<i>на основании этого бот сам посчитает длительность запуска 🤓</i>'),
+        I18nFormat('new_run_reagent_kit'),
         Group(
         Column(
             Select(
@@ -45,37 +45,34 @@ new_run_dialog = Dialog(
             )),
             width=3
         ),
-            Button(Const('Назад'), id='back2', on_click=go_back),
+            Button(I18nFormat('back'), id='back2', on_click=go_back),
         
             getter=getter_reagents,
             state=RunSG.reagent_kit
     ),
     Window(
-        Const('Введите длительность запуска <u><b>в часах</b></u>.'),
+        I18nFormat('new_run_duration'),
         TextInput(
             id='run_duration',
             type_factory=check_duration,
             on_success=success_qitantime_handler,
             on_error=error_qitantime_handler
         ),
-        Button(Const('Назад'), id='to_run_date', on_click=switch_to_rundate),
+        Button(I18nFormat('back'), id='to_run_date', on_click=switch_to_rundate),
         state=RunSG.run_duration
     ),  
     Window(
-        Const('📝 Краткое описание события'),
-        Const('Если все <b>ОК</b>, жмите <b>"Завершить"</b>.\n'),
-        Format('<b>Запланированное событие:</b> {event_type}'),
-        Format('<b>Инструмент:</b> {summary[instrument]}'),
-        Format('<b>Дата запуска:</b> {summary[run_start_date]}'),
+        I18nFormat('summary_pretext'),
+        Format('{summary_keys}'),
         Case(
             texts={
-                True: Format('<b>Длительность запуска:</b> {summary[qitan_time]} ч.'),
-                False: Format('<b>Реагент:</b> {summary[reagent]}'),
+                True: Format('{run_duration}'),
+                False: Format('{reagent}'),
             },
             selector='is_qitan'
         ),
-        Button(Const('Завершить'), id='complete', on_click=complete_new_run_plan),
-        Button(Const('Назад'), id='either_duration_or_reagent', on_click=switch_to_duration_or_reagent),
+        Button(I18nFormat('complete'), id='complete', on_click=complete_new_run_plan),
+        Button(I18nFormat('back'), id='either_duration_or_reagent', on_click=switch_to_duration_or_reagent),
         getter=getter_summary,
         state=RunSG.summary
     ),

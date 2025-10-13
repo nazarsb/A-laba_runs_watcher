@@ -4,6 +4,7 @@ from aiogram_dialog.widgets.kbd import Button, Back
 
 from bot.dialogs.show_events_dialog.getters import getter_events
 from bot.dialogs.show_events_dialog.states import ShowEventsSG
+from bot.dialogs.widgets.i18n import I18nFormat
 
 
 def is_run_selector(data: dict, case: Case, dialog_manager: DialogManager):
@@ -23,8 +24,8 @@ show_events_dialog = Dialog(
     Window(
         Case(
             texts={
-               True:  Const('<u><b>📆 Запланированые события:</b></u>\n'),
-               False: Const('<b>В А-лабе всё спокойно.\nЗапланированных событий нет. 😴</b>\n'),
+               True:  I18nFormat('planned_events'),
+               False: I18nFormat('no_events_planned'),
             },
             selector=is_there_event_selector,
         ),

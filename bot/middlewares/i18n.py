@@ -22,10 +22,7 @@ class TranslatorRunnerMiddleware(BaseMiddleware):
             return await handler(event, data)
 
         hub: TranslatorHub = data.get("translator_hub")
-        print(hub)
-        print(user.language_code)
-        print(isinstance(hub, TranslatorHub))
-        pprint.pprint(data)
+        
         data['i18n'] = hub.get_translator_by_locale(locale=user.language_code)
 
         return await handler(event, data)

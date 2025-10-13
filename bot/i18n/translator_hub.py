@@ -18,14 +18,18 @@ def create_translator_hub() -> TranslatorHub:
                         "locales/ru/LC_MESSAGES/txt.ftl", 
                         "locales/ru/LC_BUTTONS/txt.ftl",
                         ],
-                )
+                    use_isolating=False
+                ),
+                separator='_'
             ),
             FluentTranslator(
                 locale="en",
                 translator=FluentBundle.from_files(
                     locale="en-US",
                     filenames=["locales/en/LC_MESSAGES/txt.ftl"],
-                )
+                    use_isolating=False
+                ),
+                separator='_'
             )
         ],
         root_locale="ru"

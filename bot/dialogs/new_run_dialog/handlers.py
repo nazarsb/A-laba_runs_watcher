@@ -6,6 +6,7 @@ from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import DialogManager, ChatEvent
 from aiogram_dialog.widgets.kbd import Button, Select, Calendar
 from aiogram_dialog.widgets.input import ManagedTextInput
+from fluentogram import TranslatorRunner
 
 from database.enums.enums import UserRole
 
@@ -33,7 +34,11 @@ async def instrument_selection(callback: CallbackQuery, widget: Select, dialog_m
                                        'is_there_time': False})
     await dialog_manager.switch_to(state=RunSG.run_date)
 
-async def click_on_date(callback: ChatEvent, widget: Calendar, dialog_manager: DialogManager, selected_date: date,):
+async def click_on_date(callback: ChatEvent, 
+                        widget: Calendar, 
+                        dialog_manager: DialogManager, 
+                        selected_date: date):
+    i18n = dialog_manager.middleware_data.get('i18n')
     if selected_date >= date.today():
         dialog_manager.dialog_data.update({'run_start_date': str(selected_date)})
         if dialog_manager.dialog_data.get('instrument') in ('Qnome-3841',):
@@ -41,8 +46,9 @@ async def click_on_date(callback: ChatEvent, widget: Calendar, dialog_manager: D
         else:
             await dialog_manager.switch_to(state=RunSG.reagent_kit)
     else:
-        await callback.answer(text=f'{selected_date} уже в прошлом. \nСегодня {str(date.today())}. \nВыберете актуальную дату.',
+        await callback.answer(text=i18n.get('calendar_warning', selected_date=selected_date, today=str(date.today())),
                               show_alert=True)
+
 
 
 def check_duration(text: str): 
@@ -66,9 +72,9 @@ async def error_qitantime_handler(
         widget: ManagedTextInput, 
         dialog_manager: DialogManager, 
         error: ValueError):
-    await message.answer(
-        text='Вы ввели некорректный формат длительности. Просто напишите число - сколько часов будет длиться запуск?',
-    )
+    i18n = dialog_manager.middleware_data.get('i18n')
+    await message.answer(text=i18n.get('wrong_duration_frmt'))
+    
 
 
 async def switch_to_rundate(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
@@ -102,15 +108,16 @@ async def complete_new_run_plan(callback: CallbackQuery, button: Button, dialog_
                        time_end=dialog_manager.dialog_data.get('time2'),
                        is_there_time=dialog_manager.dialog_data.get('is_there_time'),
                        session=dialog_manager.middleware_data.get('session'))
-    await callback.answer('Событие запланировано. Просмотр событий - по команде /show_events', show_alert=True)
     bot = dialog_manager.middleware_data.get('bot')
     active_users = await get_users_exept_role(session=dialog_manager.middleware_data.get('session'), role=UserRole.UNKNOWN)
+    i18n = dialog_manager.middleware_data.get('i18n')
     for id in active_users:
         with suppress(BaseException):
             await bot.send_message(
                 chat_id=id,
-                text=f'🚀 Запланирован новый <b>запуск</b> на <b>{dialog_manager.dialog_data.get("run_start_date")} - {dialog_manager.dialog_data.get("run_end_date")}</b>. \
-                \nПросмотр событий - по команде \n<b>/show_events</b>'
+                text=i18n.get('new_run_planned_notification',
+                              run_start_date=dialog_manager.dialog_data.get("run_start_date"),
+                              run_end_date=dialog_manager.dialog_data.get("run_end_date"),),
             )
     await dialog_manager.done()
 

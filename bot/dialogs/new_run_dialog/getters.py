@@ -27,7 +27,7 @@ async def getter_summary(dialog_manager: DialogManager,
                 instrument=dialog_manager.dialog_data.get('instrument'),
                 run_start_date=dialog_manager.dialog_data.get('run_start_date'),
                 ),
-            'run_duration': i18n.get('new_run_duration',
+            'run_duration': i18n.get('run_duration',
                 qitan_time=dialog_manager.dialog_data.get('qitan_time')),
             'reagent': i18n.get('new_run_reagent',
                 reagent=dialog_manager.dialog_data.get('reagent'))

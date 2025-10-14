@@ -61,7 +61,8 @@ async def success_qitantime_handler(
         widget: ManagedTextInput, 
         dialog_manager: DialogManager, 
         result: dict):
-    dialog_manager.dialog_data.update({'qitan_time': result.get('run_duration')})
+    dialog_manager.dialog_data.update({'qitan_time': result.get('run_duration'), 
+                                       'reagent': ''})
     run_start_date = dialog_manager.dialog_data.get('run_start_date')
     dialog_manager.dialog_data.update({'run_end_date': (datetime.strptime(run_start_date, '%Y-%m-%d') + timedelta(hours=result.get('run_duration'))).strftime('%Y-%m-%d')})
     await dialog_manager.switch_to(state=RunSG.summary)
@@ -92,6 +93,7 @@ async def reagent_selection(callback: CallbackQuery, widget: Select, dialog_mana
     run_duration = await get_runtime(selected_reagent, dialog_manager.middleware_data.get('session'))
     run_start_date = dialog_manager.dialog_data.get('run_start_date')
     dialog_manager.dialog_data.update({'reagent': selected_reagent,
+                                       'qitan_time': '',
                                        'run_end_date': (datetime.strptime(run_start_date, '%Y-%m-%d') + timedelta(hours=run_duration+12)).strftime('%Y-%m-%d')})
     await dialog_manager.switch_to(state=RunSG.summary)
 

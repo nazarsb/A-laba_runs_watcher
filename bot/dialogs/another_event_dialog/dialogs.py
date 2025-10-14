@@ -5,7 +5,9 @@ from aiogram_dialog.widgets.text import Const, Format, Case, Multi
 from aiogram_dialog.widgets.kbd import Button, Select, Calendar, Column, Group, Back, Next
 from aiogram_dialog.widgets.input import TextInput, ManagedTextInput, MessageInput
 
-from bot.dialogs.another_event_dialog.getters import get_event_data
+from bot.dialogs.another_event_dialog.getters import (get_another_event_end_date, get_another_event_start_date, 
+                                                       get_another_event_start_time, get_another_event_end_time,
+                                                       get_another_event_summary)
 from bot.dialogs.another_event_dialog.states import AnotherEventSG
 from bot.dialogs.another_event_dialog.handlers import (length_check, error_length_handler, 
                                                        correct_length_handler, no_text,
@@ -13,9 +15,11 @@ from bot.dialogs.another_event_dialog.handlers import (length_check, error_lengt
                                                        error_time_handler, success_end_time_handler,
                                                        success_start_time_handler, go_summary, complete_new_event_plan)
 
+from bot.dialogs.widgets.i18n import I18nFormat
+
 another_event_dialog = Dialog(
     Window(
-        Const('✍️ Введите название события'),
+        I18nFormat('enter_another_event_name'),
         TextInput(
             id='event_name',
             type_factory=length_check,
@@ -30,70 +34,61 @@ another_event_dialog = Dialog(
                   
     ),
     Window(
-        Format('Планируем <u>{event_name}</u>'),
-        Const('🗓 Выберите <b>дату начала</b> события'),
+        Format('{another_event_start_date}'),
         Calendar(id='event_start_date',
                  on_click=click_on_start_date),
-        Back(Const('Назад'), id='back'),
+        Back(I18nFormat('back'), id='back'),
         state=AnotherEventSG.event_start_date,
+        getter=get_another_event_start_date
     ),
     Window(
-        Format('Планируем <u>{event_name}</u> на дату <u>{event_start_date}</u>'),
-        Const('⏳ Введите <b>время начала</b> события или жмите "Пропустить"'),
+        Format('{another_event_start_time}'),
         TextInput(
             id='event_start_time',
             type_factory=check_time,
             on_success=success_start_time_handler,
             on_error=error_time_handler
         ),
-        Next(Const('Пропустить'), id='next'),
-        Back(Const('Назад'), id='back'),
+        Next(I18nFormat('skip'), id='next'),
+        Back(I18nFormat('back'), id='back'),
         state=AnotherEventSG.event_start_time,
+        getter=get_another_event_start_time
     ),
     Window(
-        Format('Планируем <u>{event_name}</u> на дату <u>{event_start_date}</u>'),
-        Const('🗓 Выберите <b>дату окончания</b> события'),
+        Format('{another_event_end_date}'),
         Calendar(id='event_end_date',
                  on_click=click_on_end_date),
-        Back(Const('Назад'), id='back'),
-        state=AnotherEventSG.event_end_date
+        Back(I18nFormat('back'), id='back'),
+        state=AnotherEventSG.event_end_date,
+        getter=get_another_event_end_date
     ),
     Window(
-        Format('Планируем <u>{event_name}</u> на даты <u>{event_start_date} - {event_end_date}</u>'),
-        Const('⌛️ Введите <b>время окончания</b> события или жмите "Пропустить"'),
+        Format('{another_event_end_time}'),
         TextInput(
             id='event_end_time',
             type_factory=check_time,
             on_success=success_end_time_handler,
             on_error=error_time_handler
         ),
-        Button(Const('Пропустить'), id='next', on_click=go_summary),
-        Back(Const('Назад'), id='back'),
-        state=AnotherEventSG.event_end_time
+        Button(I18nFormat('skip'), id='next', on_click=go_summary),
+        Back(I18nFormat('back'), id='back'),
+        state=AnotherEventSG.event_end_time,
+        getter=get_another_event_end_time
     ),
 
     Window(
-        Const('📝 Краткое описание события'),
-        Const('Если все <b>ОК</b>, жмите <b>"Да"</b>.\n'),
-        Format('<b>Тип событие:</b> {event_type}'),
-        Format('<b>Название события:</b> {event_name}'),
+        I18nFormat('summary_pretext'),
         Case(
             texts={
-                True: Multi(
-                    Format('<b>Начало события:</b> {event_start_date} {event_start_time}'),
-                    Format('<b>Окончание события:</b> {event_end_date} {event_end_time}'),
-                ),
-                False: Multi(
-                    Format('<b>Начало события:</b> {event_start_date}'),
-                    Format('<b>Окончание события:</b> {event_end_date}'),
-                ),
+                False:Format('{another_event_summary_wo_time}'),
+                True: Format('{another_event_summary_with_time}'),
             },
             selector='is_there_time'
         ),
-        Const('\nВсе верно?'),
-        Button(Const('Да'), id='complete', on_click=complete_new_event_plan),
-        Back(Const('Назад'), id='back'),
+        Button(I18nFormat('yes'), id='complete', on_click=complete_new_event_plan),
+        Back(I18nFormat('back'), id='back'),
         state=AnotherEventSG.summary,
+        getter=get_another_event_summary
+
     ),
-    getter=get_event_data
 )

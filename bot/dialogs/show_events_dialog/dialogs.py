@@ -1,6 +1,5 @@
 from aiogram_dialog import Dialog, DialogManager, Window
-from aiogram_dialog.widgets.text import Const, Format, List, Case, Multi
-from aiogram_dialog.widgets.kbd import Button, Back
+from aiogram_dialog.widgets.text import Format, List, Case, Multi
 
 from bot.dialogs.show_events_dialog.getters import getter_events
 from bot.dialogs.show_events_dialog.states import ShowEventsSG

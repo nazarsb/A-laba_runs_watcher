@@ -8,8 +8,7 @@ async def getter_user(dialog_manager: DialogManager, event_from_user: User, **kw
         'name': event_from_user.first_name,
         'is_first': True
         }
-        # dialog_manager.start_data.clear()
-        print(dialog_manager.start_data)
+        dialog_manager.start_data.clear()
     else:
         getter_user_data = {'is_first': False}    
     return getter_user_data

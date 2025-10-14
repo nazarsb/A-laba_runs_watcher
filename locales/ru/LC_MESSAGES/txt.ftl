@@ -67,3 +67,35 @@ electro_summary_wo_time =   <b>Тип события:</b> { $event_type }
 electro_planned_notification = ⚠️ Запланировано отключение электичества на <b>{ $event_start_date } - { $event_end_date }</b>.
                                 Просмотр событий - по команде 
                                 <b>/show_events</b>
+
+enter_another_event_name = ✍️ Введите название события
+
+another_event_start_date = Планируем <u>{ $event_name }</u>
+                            🗓 Выберите <b>дату начала</b> события
+
+another_event_start_time = Планируем <u>{ $event_name }</u> на дату <u>{ $event_start_date }</u>
+                            ⏳ Введите <b>время начала</b> события или жмите "Пропустить"
+
+another_event_end_date = Планируем <u>{ $event_name }</u> на дату <u>{ $event_start_date }</u>
+                        🗓 Выберите <b>дату окончания</b> события
+
+another_event_end_time = Планируем <u>{ $event_name }</u> на даты <u>{ $event_start_date } - { $event_end_date }</u>
+                        ⌛️ Введите <b>время окончания</b> события или жмите "Пропустить"
+
+another_event_summary_with_time = <b>Тип событие:</b> { $event_type }
+                        <b>Название события:</b> { $event_name }
+                        <b>Начало события:</b> { $event_start_date } { $event_start_time }
+                        <b>Окончание события:</b> { $event_end_date } { $event_end_time }
+
+                        Все верно?
+
+another_event_summary_wo_time = <b>Тип событие:</b> { $event_type }
+                        <b>Название события:</b> { $event_name }
+                        <b>Начало события:</b> { $event_start_date }
+                        <b>Окончание события:</b> { $event_end_date }
+
+                        Все верно?
+
+another_event_planned_notification = ⚠️ Запланировано { $event_name } на <b>{ $event_start_date } - { $event_end_date }</b>.
+                                    Просмотр событий - по команде 
+                                    <b>/show_events</b>

@@ -1,16 +1,10 @@
-from datetime import date
 
 import logging
 from aiogram import Router
-from aiogram.filters import CommandStart
-from aiogram.types import CallbackQuery, Message
-from aiogram_dialog import DialogManager, StartMode, ChatEvent
-from aiogram_dialog.widgets.kbd import Button, Select, Calendar
+from aiogram.types import CallbackQuery
+from aiogram_dialog import DialogManager
+from aiogram_dialog.widgets.kbd import Button
 
-from bot.dialogs.start_dialog.states import StartSG
-from bot.dialogs.new_run_dialog.states import RunSG
-from bot.dialogs.electro_dialog.states import ElectroSG
-from bot.dialogs.another_event_dialog.states import AnotherEventSG
 
 logger = logging.getLogger(__name__)
 

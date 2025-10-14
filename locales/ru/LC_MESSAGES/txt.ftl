@@ -18,7 +18,7 @@ new_run_summary = <b>Запланированное событие:</b> { $event
                     <b>Инструмент:</b> { $instrument }
                     <b>Дата запуска:</b> { $run_start_date }
                     
-new_run_duration = <b>Длительность запуска:</b> { $qitan_time } ч.
+run_duration = <b>Длительность запуска:</b> { $qitan_time } ч.
 new_run_reagent = <b>Реагент:</b> { $reagent }
 
 calendar_warning = { $selected_date } уже в прошлом. 

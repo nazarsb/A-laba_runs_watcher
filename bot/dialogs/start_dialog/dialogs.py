@@ -1,5 +1,4 @@
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.kbd import Button
 
 from bot.dialogs.start_dialog.getters import getter_user
@@ -11,9 +10,6 @@ from bot.dialogs.widgets.i18n import I18nFormat
 
 start_dialog = Dialog(
     Window(
-        Format('Привет, {name}!\n\n'
-               'Запланировать новое событие?\n'
-               'Еще можешь выбирать команды в меню внизу слева.', when='is_first'),
         I18nFormat('start_message'),
         Button(text=I18nFormat('new_run'), id='new_run', on_click=click_new_run),
         Button(text=I18nFormat('electro_turn_off'), id='new_event', on_click=click_new_event),

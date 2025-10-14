@@ -31,4 +31,3 @@ async def click_new_event(callback: CallbackQuery, button: Button, dialog_manage
 
 async def click_alother_event(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
     await dialog_manager.start(state=AnotherEventSG.event_name, data={'event_type': 'Другое событие'})
-    # await callback.answer(text='Этот раздел еще в разработке. Обождите.', show_alert=True)

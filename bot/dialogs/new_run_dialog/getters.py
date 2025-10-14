@@ -1,5 +1,4 @@
 
-from aiogram.types import User
 from aiogram_dialog import DialogManager
 from sqlalchemy.ext.asyncio import AsyncSession
 from fluentogram import TranslatorRunner

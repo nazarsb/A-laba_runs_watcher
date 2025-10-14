@@ -5,3 +5,4 @@ back = Назад
 complete = Завершить
 yes = Да
 no = Нет
+skip = Пропустить

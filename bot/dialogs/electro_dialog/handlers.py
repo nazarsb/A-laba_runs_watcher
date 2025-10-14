@@ -1,18 +1,13 @@
 from contextlib import suppress
 from datetime import date
-
 import logging
-
 from dateutil.parser import parse
 
-from aiogram import Bot, Router
-from aiogram.filters import CommandStart
 from aiogram.types import CallbackQuery, Message
-from aiogram_dialog import DialogManager, StartMode, ChatEvent
-from aiogram_dialog.widgets.kbd import Button, Select, Calendar
-from aiogram_dialog.widgets.input import ManagedTextInput, TextInput
+from aiogram_dialog import DialogManager, ChatEvent
+from aiogram_dialog.widgets.kbd import Button, Calendar
+from aiogram_dialog.widgets.input import ManagedTextInput
 
-from fluentogram import TranslatorRunner
 
 from bot.dialogs.electro_dialog.states import ElectroSG
 from bot.dialogs.start_dialog.states import StartSG
@@ -56,7 +51,7 @@ async def click_on_end_date(callback: ChatEvent,
     else:
         await callback.answer(text=i18n.get('wrong_end_date', 
                                             start_date=dialog_manager.dialog_data.get('event_start_date'),
-                                            end_date=str(selected_date),
+                                            selected_date=str(selected_date),
                                             ),
                               show_alert=True)
 
@@ -129,7 +124,7 @@ async def complete_new_event_plan(callback: CallbackQuery,
                        session=dialog_manager.middleware_data.get('session'))
     bot = dialog_manager.middleware_data.get('bot')
     active_users = await get_users_exept_role(session=dialog_manager.middleware_data.get('session'), role=UserRole.UNKNOWN)
-    for id in active_users:
+    for id in active_users:     # юзеров меньше 30, лимиты достичь невозможно, поэтому for порфовор.
         with suppress(BaseException):
             await bot.send_message(
                 chat_id=id,

@@ -6,7 +6,6 @@ from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import DialogManager, ChatEvent
 from aiogram_dialog.widgets.kbd import Button, Select, Calendar
 from aiogram_dialog.widgets.input import ManagedTextInput
-from fluentogram import TranslatorRunner
 
 from database.enums.enums import UserRole
 
@@ -111,7 +110,7 @@ async def complete_new_run_plan(callback: CallbackQuery, button: Button, dialog_
     bot = dialog_manager.middleware_data.get('bot')
     active_users = await get_users_exept_role(session=dialog_manager.middleware_data.get('session'), role=UserRole.UNKNOWN)
     i18n = dialog_manager.middleware_data.get('i18n')
-    for id in active_users:
+    for id in active_users:         # юзеров меньше 30, лимиты достичь невозможно, поэтому for порфовор.
         with suppress(BaseException):
             await bot.send_message(
                 chat_id=id,

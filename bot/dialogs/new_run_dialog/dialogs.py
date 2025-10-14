@@ -3,11 +3,16 @@ from aiogram_dialog.widgets.text import Const, Format, Case
 from aiogram_dialog.widgets.kbd import Button, Select, Calendar, Column, Group 
 from aiogram_dialog.widgets.input import TextInput
 
-from bot.dialogs.new_run_dialog.getters import getter_instruments, getter_reagents, getter_summary
+from bot.dialogs.new_run_dialog.getters import (getter_instruments, 
+                                                getter_reagents, 
+                                                getter_summary)
 from bot.dialogs.new_run_dialog.states import RunSG   
-from bot.dialogs.new_run_dialog.handlers import (instrument_selection, click_on_date, reagent_selection, 
-                                        complete_new_run_plan, go_back, command_start_process, success_qitantime_handler, 
-                                        error_qitantime_handler, check_duration, switch_to_rundate, switch_to_duration_or_reagent)
+from bot.dialogs.new_run_dialog.handlers import (instrument_selection, click_on_date, 
+                                                 reagent_selection, complete_new_run_plan, 
+                                                 go_back, command_start_process, 
+                                                 success_qitantime_handler, error_qitantime_handler, 
+                                                 check_duration, switch_to_rundate, 
+                                                 switch_to_duration_or_reagent)
 from bot.dialogs.widgets.i18n import I18nFormat
 
 

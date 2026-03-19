@@ -160,6 +160,17 @@ services:
     profiles:
       - prod
 
+  xray:
+    image: teddysun/xray
+    container_name: xray-client
+    restart: always
+    volumes:
+      - ./xray:/etc/xray
+    ports:
+      - "127.0.0.1:10808:10808" # Прокся будет видна только локально на сервере
+
+
+
 volumes:
   postgres_volume:
   pgadmin_volume:

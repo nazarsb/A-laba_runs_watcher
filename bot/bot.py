@@ -3,6 +3,7 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.types import BotCommand, BotCommandScopeDefault, BotCommandScopeAllPrivateChats, BotCommandScopeAllGroupChats, BotCommandScopeChatMember, BotCommandScopeChat
 from aiogram.client.default import DefaultBotProperties
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.enums import ParseMode
@@ -40,8 +41,14 @@ async def main() -> None:
     storage = RedisStorage(redis=redis, 
                            key_builder=DefaultKeyBuilder(with_destiny=True))
 
-    bot = Bot(token=config.bot.token,
-              default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    bot_kwargs = {
+        "token": config.bot.token,
+        "default": DefaultBotProperties(parse_mode=ParseMode.HTML),
+    }
+    if config.bot.proxy_url:
+        bot_kwargs["session"] = AiohttpSession(proxy=config.bot.proxy_url)
+
+    bot = Bot(**bot_kwargs)
     dp = Dispatcher(storage=storage)
 
     logger.info('Setting up sqlalchemy')
@@ -104,5 +111,6 @@ async def main() -> None:
         logger.exception(e)
     finally:
         await bot.session.close()
+        await engine.dispose()
         logger.info("Connection to Postgres closed")
 

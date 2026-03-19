@@ -5,6 +5,7 @@ from environs import Env
 @dataclass
 class TgBot:
     token: str
+    proxy_url: str | None
 
 @dataclass
 class RedisConfig:
@@ -43,9 +44,10 @@ def load_config(path: str | None = None) -> Config:
     return Config(
         bot=TgBot(
             token=env('TOKEN'),
+            proxy_url=env.str('TELEGRAM_PROXY_URL', None) or None,
         ),
         redis=RedisConfig(
-            port=env('REDIS_PORT'),
+            port=env.int('REDIS_PORT'),
             host=env('REDIS_HOST')
         ),
         logs = Logs(
@@ -53,11 +55,11 @@ def load_config(path: str | None = None) -> Config:
             level=env('LOGS_LEVEL')
         ),
         db = DbConfig(
-            is_echo=env('IS_ECHO'),
+            is_echo=env.bool('IS_ECHO'),
             pg_user=env('POSTGRES_USER'),
             pg_password=env('POSTGRES_PASSWORD'),
             pg_host=env('POSTGRES_HOST'),
-            pg_port=env('POSTGRES_PORT'),
+            pg_port=env.int('POSTGRES_PORT'),
             pg_db_name=env('POSTGRES_DB'),
             is_local=env.bool('IS_LOCAL')
 

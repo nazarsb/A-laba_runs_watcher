@@ -98,6 +98,7 @@ services:
   db_migrations_prod:
     container_name: db_migrations
     env_file: .env.prod
+    build: .
     image: my_bot
     restart: no
     command: ["alembic", "upgrade", "head"]
@@ -117,6 +118,7 @@ services:
   bot:
     container_name: bot
     env_file: .env.prod
+    build: .
     image: my_bot
     restart: ${DOCKER_RESTART_POLICY}
     environment:
@@ -141,6 +143,7 @@ services:
   scheduled_tasks:
     container_name: scheduled_tasks
     env_file: .env.prod
+    build: .
     image: my_bot
     restart: ${DOCKER_RESTART_POLICY}
     init: true
